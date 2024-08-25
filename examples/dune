@@ -1,0 +1,5 @@
+;; examples/dune
+
+(executable
+ (name main)
+ (libraries group_theory))
