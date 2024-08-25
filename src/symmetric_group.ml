@@ -5,7 +5,7 @@ open! Base
 type t = int array
 (** Permutations represented as arrays *)
 
-module Make (N : sig
+module M (N : sig
     val n : int
   end) : Group.GROUP with type t = t = struct
   type nonrec t = t
@@ -23,18 +23,35 @@ module Make (N : sig
   let structure = Group_structure.Symmetric N.n
   let equal a b = Array.equal Int.( = ) a b
 
-  let elements =
-    let rec heap_permute k arr acc =
-      if k = 1
-      then Array.copy arr :: acc
-      else (
-        let acc = heap_permute (k - 1) arr acc in
-        List.fold (List.init k ~f:Fn.id) ~init:acc ~f:(fun acc i ->
-          Array.swap arr (if k % 2 = 0 then i else 0) (k - 1);
-          let new_acc = heap_permute (k - 1) arr acc in
-          Array.swap arr (if k % 2 = 0 then i else 0) (k - 1);
-          new_acc))
+  let next_permutation perm =
+    let n = Array.length perm in
+    let rec find_k i =
+      if i < 0
+      then None
+      else if perm.(i) < perm.(i + 1)
+      then Some i
+      else find_k (i - 1)
     in
-    heap_permute N.n (Array.init N.n ~f:Fn.id) []
+    match find_k (n - 2) with
+    | None ->
+      Array.init n ~f:Fn.id (* Return identity if it's the last permutation *)
+    | Some k ->
+      let l =
+        Array.findi_exn ~f:(fun i x -> i > k && x > perm.(k)) perm |> fst
+      in
+      Array.swap perm k l;
+      (* Reverse the subarray from k+1 to the end *)
+      for i = 0 to (n - k - 2) / 2 do
+        Array.swap perm (k + 1 + i) (n - 1 - i)
+      done;
+      perm
+  ;;
+
+  let elements =
+    Sequence.unfold_step ~init:identity ~f:(fun perm ->
+      let next = next_permutation perm in
+      if equal next identity
+      then Sequence.Step.Done
+      else Sequence.Step.Yield { value = perm; state = next })
   ;;
 end

@@ -1,5 +1,7 @@
 (* src/group.mli *)
 
+open! Base
+
 (** Abstract representation of a group *)
 module type GROUP = sig
   (** Type representing group elements *)
@@ -17,8 +19,8 @@ module type GROUP = sig
   (** Equality check between group elements *)
   val equal : t -> t -> bool
 
-  (** List of all elements in the group *)
-  val elements : t list
+  (** Lazy sequence of all elements in the group *)
+  val elements : t Sequence.t
 
   (** Order (size) of the group *)
   val order : int

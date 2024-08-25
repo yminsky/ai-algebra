@@ -32,15 +32,17 @@ module Make (N : sig
   ;;
 
   let elements =
-    let rec loop i =
+    Sequence.unfold ~init:0 ~f:(fun i ->
       if i = N.n
-      then []
+      then None
       else
-        { rotation = i; reflection = false }
-        :: { rotation = i; reflection = true }
-        :: loop (i + 1)
-    in
-    loop 0
+        Some
+          ( Sequence.of_list
+              [ { rotation = i; reflection = false }
+              ; { rotation = i; reflection = true }
+              ]
+          , i + 1 ))
+    |> Sequence.concat
   ;;
 
   let structure = Group_structure.Dihedral N.n
