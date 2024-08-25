@@ -13,27 +13,38 @@ module M (N : sig
   let order = Utils.factorial N.n
   let identity = Array.init N.n ~f:Fn.id
 
+  (** Reverse a subarray from index [start] to [stop] inclusive *)
+  let reverse_subarray arr start stop =
+    let rec helper i j =
+      if i < j
+      then (
+        Array.swap arr i j;
+        helper (i + 1) (j - 1))
+    in
+    helper start stop
+  ;;
+
   (** Generates all permutations using Lexicographic Order Algorithm *)
   let elements =
     let initial = Array.init N.n ~f:Fn.id in
-    let rec next_permutation arr =
+    let next_permutation arr =
       let n = Array.length arr in
       let k = ref (n - 2) in
       while !k >= 0 && arr.(!k) >= arr.(!k + 1) do
-        decr k
+        k := !k - 1
       done;
       if !k < 0
       then None
       else (
         let l = ref (n - 1) in
         while arr.(!k) >= arr.(!l) do
-          decr l
+          l := !l - 1
         done;
         Array.swap arr !k !l;
-        Array.reverse_inplace arr (!k + 1) (n - 1);
+        reverse_subarray arr (!k + 1) (n - 1);
         Some (Array.copy arr))
     in
-    Sequence.unfold_step ~init:(Some initial) ~f:(function
+    Sequence.unfold_step ~init:(Some identity) ~f:(function
       | None -> Sequence.Step.Done
       | Some perm ->
         Sequence.Step.Yield (perm, next_permutation (Array.copy perm)))
