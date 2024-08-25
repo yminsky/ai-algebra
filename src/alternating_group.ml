@@ -19,52 +19,52 @@ module M (N : sig
   let equal = Sym.equal
   let structure = Group_structure.Alternating N.n
 
-  (** Calculate the parity of a permutation *)
-  let is_even p =
-    let rec count_inversions arr =
-      let n = Array.length arr in
-      let temp = Array.copy arr in
-      let rec merge_sort l r =
-        if l >= r
-        then 0
+  (** Calculate the parity of a permutation using inversion count *)
+  let count_inversions arr =
+    let n = Array.length arr in
+    let temp = Array.copy arr in
+    let rec merge_sort l r =
+      if l >= r
+      then 0
+      else (
+        let m = (l + r) / 2 in
+        let inv_left = merge_sort l m in
+        let inv_right = merge_sort (m + 1) r in
+        let inv_merge = merge l m r in
+        inv_left + inv_right + inv_merge)
+    and merge l m r =
+      let inv_count = ref 0 in
+      let left = Array.sub temp ~pos:l ~len:(m - l + 1) in
+      let right = Array.sub temp ~pos:(m + 1) ~len:(r - m) in
+      let i = ref 0 in
+      let j = ref 0 in
+      let k = ref l in
+      while !i < Array.length left && !j < Array.length right do
+        if left.(!i) <= right.(!j)
+        then (
+          temp.(!k) <- left.(!i);
+          i := !i + 1)
         else (
-          let m = (l + r) / 2 in
-          let inv_left = merge_sort l m in
-          let inv_right = merge_sort (m + 1) r in
-          let inv_merge = merge l m r in
-          inv_left + inv_right + inv_merge)
-      and merge l m r =
-        let i = ref l
-        and j = ref (m + 1)
-        and k = ref l
-        and inv_count = ref 0 in
-        while !i <= m && !j <= r do
-          if temp.(!i) <= temp.(!j)
-          then (
-            arr.(!k) <- temp.(!i);
-            incr i)
-          else (
-            arr.(!k) <- temp.(!j);
-            incr j;
-            inv_count := !inv_count + (m - !i + 1));
-          incr k
-        done;
-        while !i <= m do
-          arr.(!k) <- temp.(!i);
-          incr i;
-          incr k
-        done;
-        while !j <= r do
-          arr.(!k) <- temp.(!j);
-          incr j;
-          incr k
-        done;
-        !inv_count
-      in
-      merge_sort 0 (n - 1)
+          temp.(!k) <- right.(!j);
+          j := !j + 1;
+          inv_count := !inv_count + (Array.length left - !i));
+        k := !k + 1
+      done;
+      while !i < Array.length left do
+        temp.(!k) <- left.(!i);
+        i := !i + 1;
+        k := !k + 1
+      done;
+      while !j < Array.length right do
+        temp.(!k) <- right.(!j);
+        j := !j + 1;
+        k := !k + 1
+      done;
+      !inv_count
     in
-    count_inversions (Array.copy p) % 2 = 0
+    merge_sort 0 (n - 1)
   ;;
 
+  let is_even p = count_inversions p % 2 = 0
   let elements = Sequence.filter Sym.elements ~f:is_even
 end

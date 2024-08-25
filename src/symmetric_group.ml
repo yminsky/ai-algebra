@@ -24,30 +24,33 @@ module M (N : sig
     helper start stop
   ;;
 
+  (** Generates the next permutation in lexicographic order *)
+  let next_permutation arr =
+    let n = Array.length arr in
+    let k = ref (n - 2) in
+    while !k >= 0 && arr.(!k) >= arr.(!k + 1) do
+      k := !k - 1
+    done;
+    if !k < 0
+    then None
+    else (
+      let l = ref (n - 1) in
+      while arr.(!k) >= arr.(!l) do
+        l := !l - 1
+      done;
+      Array.swap arr !k !l;
+      reverse_subarray arr (!k + 1) (n - 1);
+      Some arr)
+  ;;
+
   (** Generates all permutations using Lexicographic Order Algorithm *)
   let elements =
     let initial = Array.init N.n ~f:Fn.id in
-    let next_permutation arr =
-      let n = Array.length arr in
-      let k = ref (n - 2) in
-      while !k >= 0 && arr.(!k) >= arr.(!k + 1) do
-        k := !k - 1
-      done;
-      if !k < 0
-      then None
-      else (
-        let l = ref (n - 1) in
-        while arr.(!k) >= arr.(!l) do
-          l := !l - 1
-        done;
-        Array.swap arr !k !l;
-        reverse_subarray arr (!k + 1) (n - 1);
-        Some (Array.copy arr))
-    in
-    Sequence.unfold_step ~init:(Some identity) ~f:(function
-      | None -> Sequence.Step.Done
+    Sequence.unfold ~init:(Some initial) ~f:(function
+      | None -> None
       | Some perm ->
-        Sequence.Step.Yield (perm, next_permutation (Array.copy perm)))
+        let next = next_permutation (Array.copy perm) in
+        Some (perm, next))
   ;;
 
   let multiply a b = Array.init N.n ~f:(fun i -> a.(b.(i)))
