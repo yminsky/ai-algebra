@@ -12,45 +12,41 @@ module M (N : sig
 
   let order = Utils.factorial N.n
   let identity = Array.init N.n ~f:Fn.id
+
+  (** Generates all permutations using Lexicographic Order Algorithm *)
+  let elements =
+    let initial = Array.init N.n ~f:Fn.id in
+    let rec next_permutation arr =
+      let n = Array.length arr in
+      let k = ref (n - 2) in
+      while !k >= 0 && arr.(!k) >= arr.(!k + 1) do
+        decr k
+      done;
+      if !k < 0
+      then None
+      else (
+        let l = ref (n - 1) in
+        while arr.(!k) >= arr.(!l) do
+          decr l
+        done;
+        Array.swap arr !k !l;
+        Array.reverse_inplace arr (!k + 1) (n - 1);
+        Some (Array.copy arr))
+    in
+    Sequence.unfold_step ~init:(Some initial) ~f:(function
+      | None -> Sequence.Step.Done
+      | Some perm ->
+        Sequence.Step.Yield (perm, next_permutation (Array.copy perm)))
+  ;;
+
   let multiply a b = Array.init N.n ~f:(fun i -> a.(b.(i)))
 
   let inverse p =
-    let inv = Array.init N.n ~f:Fn.id in
-    Array.iteri ~f:(fun i pi -> inv.(pi) <- i) p;
+    let inv = Array.create ~len:N.n 0 in
+    Array.iteri p ~f:(fun i v -> inv.(v) <- i);
     inv
   ;;
 
+  let equal a b = Array.equal Int.equal a b
   let structure = Group_structure.Symmetric N.n
-  let equal a b = Array.equal Int.( = ) a b
-
-  let next_permutation perm =
-    let n = Array.length perm in
-    let rec find_k i =
-      if i < 0
-      then None
-      else if perm.(i) < perm.(i + 1)
-      then Some i
-      else find_k (i - 1)
-    in
-    match find_k (n - 2) with
-    | None -> None (* Signal completion of cycle *)
-    | Some k ->
-      let l =
-        Array.findi_exn ~f:(fun i x -> i > k && x > perm.(k)) perm |> fst
-      in
-      let next = Array.copy perm in
-      Array.swap next k l;
-      (* Reverse the subarray from k+1 to the end *)
-      for i = 0 to (n - k - 2) / 2 do
-        Array.swap next (k + 1 + i) (n - 1 - i)
-      done;
-      Some next
-  ;;
-
-  let elements =
-    Sequence.unfold_step ~init:identity ~f:(fun perm ->
-      Sequence.Step.Yield { value = perm; state = next_permutation perm })
-    |> Sequence.take_while ~f:Option.is_some
-    |> Sequence.map ~f:Option.value_exn
-  ;;
 end
