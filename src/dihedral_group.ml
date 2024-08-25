@@ -1,5 +1,6 @@
 (* src/dihedral_group.ml *)
 
+open! Base
 open Group
 
 type t =
@@ -17,16 +18,18 @@ module Make (N : sig
   let identity = { rotation = 0; reflection = false }
 
   let multiply a b =
-    { rotation = (a.rotation + b.rotation) mod N.n
-    ; reflection = a.reflection <> b.reflection
+    { rotation = (a.rotation + b.rotation) % N.n
+    ; reflection = Bool.( <> ) a.reflection b.reflection
     }
   ;;
 
   let inverse a =
-    { rotation = (N.n - a.rotation) mod N.n; reflection = a.reflection }
+    { rotation = (N.n - a.rotation) % N.n; reflection = a.reflection }
   ;;
 
-  let equal a b = a.rotation = b.rotation && a.reflection = b.reflection
+  let equal a b =
+    Int.( = ) a.rotation b.rotation && Bool.( = ) a.reflection b.reflection
+  ;;
 
   let elements =
     let rec loop i =

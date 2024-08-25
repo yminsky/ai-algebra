@@ -1,5 +1,6 @@
-;; examples/dune
-
-(executable
- (name main)
- (libraries group_theory))
+(library
+ (name group_theory_tests)
+ (libraries group_theory)
+ (inline_tests)
+ (preprocess
+  (pps ppx_jane)))

@@ -1,5 +1,5 @@
 (* src/group_structure.ml *)
-
+open! Base
 (** Defines various group structures *)
 type t =
   | Cyclic of int
@@ -7,4 +7,4 @@ type t =
   | Symmetric of int
   | Alternating of int
   | Unknown
-[@@deriving show, eq]
+[@@deriving equal, sexp]

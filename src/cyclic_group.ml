@@ -1,5 +1,6 @@
 (* src/cyclic_group.ml *)
 
+open! Base
 open Group
 
 (** Implementation of cyclic groups *)
@@ -11,9 +12,9 @@ module Make (N : sig
 
   let order = N.n
   let identity = 0
-  let multiply a b = (a + b) mod N.n
-  let inverse a = (N.n - a) mod N.n
-  let equal = Int.equal
-  let elements = List.init N.n (fun i -> i)
+  let multiply a b = (a + b) % N.n
+  let inverse a = (N.n - a) % N.n
+  let equal = Int.( = )
+  let elements = List.init N.n ~f:Fn.id
   let structure = Group_structure.Cyclic N.n
 end

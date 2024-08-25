@@ -1,10 +1,9 @@
 (* src/alternating_group.ml *)
-
+open! Base
 open Group
 
 (** Implementation of alternating groups *)
 type t = int array
-(** Even permutations represented as arrays *)
 
 module Make (N : sig
     val n : int
@@ -24,11 +23,11 @@ module Make (N : sig
     let inv_count = ref 0 in
     for i = 0 to N.n - 1 do
       for j = i + 1 to N.n - 1 do
-        if p.(i) > p.(j) then incr inv_count
+        if p.(i) > p.(j) then Int.incr inv_count
       done
     done;
-    !inv_count mod 2 = 0
+    !inv_count % 2 = 0
   ;;
 
-  let elements = List.filter is_even Sym.elements
+  let elements = List.filter ~f:is_even Sym.elements
 end

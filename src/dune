@@ -1,3 +1,6 @@
 (library
  (name group_theory)
+ (libraries base)
+ (preprocess
+  (pps ppx_jane))
  (modules_without_implementation group))
