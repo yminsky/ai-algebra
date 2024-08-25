@@ -10,5 +10,5 @@ module Direct_product (G1 : GROUP) (G2 : GROUP) : GROUP = struct
   let inverse (a1, a2) = G1.inverse a1, G2.inverse a2
   let structure = Group_structure.cross_product G1.structure G2.structure
   let elements = Sequence.cartesian_product G1.elements G2.elements
-  let order = Sequence.length elements
+  let order = G1.order * G2.order
 end

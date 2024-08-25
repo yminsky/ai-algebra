@@ -9,10 +9,10 @@ let%expect_test "Cyclic Group Z_5" =
       let n = 5
     end)
   in
-  printf "Cyclic Group Z_5 (ORDER: %d):\n" Z5.order;
+  printf "Cyclic Group Z_5 (order: %d):\n" Z5.order;
   Sequence.iter ~f:(printf "%d ") Z5.elements;
   [%expect {|
-    Cyclic Group Z_5 (ORDER: 5):
+    Cyclic Group Z_5 (order: 5):
     0 1 2 3 4
     |}]
 ;;
@@ -47,8 +47,7 @@ let%expect_test "Symmetric Group S_3" =
       Array.iter ~f:(printf "%d") p;
       printf " ")
     S3.elements;
-  [%expect
-    {| Symmetric Group S_3 (order: 6): |}]
+  [%expect {| Symmetric Group S_3 (order: 6): |}]
 ;;
 
 let%expect_test "Alternating Group A_3" =
@@ -63,6 +62,5 @@ let%expect_test "Alternating Group A_3" =
       Array.iter ~f:(printf "%d") p;
       printf " ")
     A3.elements;
-  [%expect
-    {| Alternating Group A_3 (order: 3): |}]
+  [%expect {| Alternating Group A_3 (order: 3): |}]
 ;;
