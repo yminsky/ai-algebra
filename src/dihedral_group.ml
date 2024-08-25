@@ -9,7 +9,7 @@ type t =
   }
 
 (** Implementation of dihedral groups *)
-module Make (N : sig
+module M (N : sig
     val n : int
   end) : GROUP with type t = t = struct
   (** Elements are pairs (a, b) where a is an integer from 0 to n-1 and b is a boolean *)

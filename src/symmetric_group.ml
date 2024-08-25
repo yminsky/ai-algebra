@@ -33,25 +33,24 @@ module M (N : sig
       else find_k (i - 1)
     in
     match find_k (n - 2) with
-    | None ->
-      Array.init n ~f:Fn.id (* Return identity if it's the last permutation *)
+    | None -> None (* Signal completion of cycle *)
     | Some k ->
       let l =
         Array.findi_exn ~f:(fun i x -> i > k && x > perm.(k)) perm |> fst
       in
-      Array.swap perm k l;
+      let next = Array.copy perm in
+      Array.swap next k l;
       (* Reverse the subarray from k+1 to the end *)
       for i = 0 to (n - k - 2) / 2 do
-        Array.swap perm (k + 1 + i) (n - 1 - i)
+        Array.swap next (k + 1 + i) (n - 1 - i)
       done;
-      perm
+      Some next
   ;;
 
   let elements =
     Sequence.unfold_step ~init:identity ~f:(fun perm ->
-      let next = next_permutation perm in
-      if equal next identity
-      then Sequence.Step.Done
-      else Sequence.Step.Yield { value = perm; state = next })
+      Sequence.Step.Yield { value = perm; state = next_permutation perm })
+    |> Sequence.take_while ~f:Option.is_some
+    |> Sequence.map ~f:Option.value_exn
   ;;
 end
