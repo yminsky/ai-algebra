@@ -1,7 +1,7 @@
 open! Base
 open Group
 
-module Direct_product (G1 : GROUP) (G2 : GROUP) : GROUP = struct
+module M (G1 : GROUP) (G2 : GROUP) : GROUP with type t = G1.t * G2.t = struct
   type t = G1.t * G2.t
 
   let identity = G1.identity, G2.identity

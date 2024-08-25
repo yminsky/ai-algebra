@@ -64,3 +64,24 @@ let%expect_test "Alternating Group A_3" =
     A3.elements;
   [%expect {| Alternating Group A_3 (order: 3): |}]
 ;;
+
+let%expect_test "Direct Product of Cyclic Groups Z_2 and Z_3" =
+  let module Z2 =
+    Cyclic_group.M (struct
+      let n = 2
+    end)
+  in
+  let module Z3 =
+    Cyclic_group.M (struct
+      let n = 3
+    end)
+  in
+  let module Z2xZ3 = Direct_product.M (Z2) (Z3) in
+  printf "Direct Product Z_2 x Z_3 (order: %d):\n" Z2xZ3.order;
+  Sequence.iter ~f:(fun (a, b) -> printf "(%d, %d) " a b) Z2xZ3.elements;
+  [%expect
+    {|
+    Direct Product Z_2 x Z_3 (order: 6):
+    (0, 0) (0, 1) (0, 2) (1, 0) (1, 1) (1, 2)
+    |}]
+;;
