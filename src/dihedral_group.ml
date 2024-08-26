@@ -3,7 +3,14 @@
 open! Base
 open Group
 
-type t =
+module Element = struct
+  type t =
+    { rotation : int
+    ; reflection : bool
+    }
+end
+
+type element = Element.t =
   { rotation : int
   ; reflection : bool
   }
@@ -11,9 +18,9 @@ type t =
 (** Implementation of dihedral groups *)
 module M (N : sig
     val n : int
-  end) : GROUP with type t = t = struct
+  end) : GROUP with type t = Element.t = struct
   (** Elements are pairs (a, b) where a is an integer from 0 to n-1 and b is a boolean *)
-  type nonrec t = t
+  type t = Element.t
 
   let identity = { rotation = 0; reflection = false }
 
@@ -31,7 +38,7 @@ module M (N : sig
     Int.( = ) a.rotation b.rotation && Bool.( = ) a.reflection b.reflection
   ;;
 
-  let elements =
+  let elements : Element.t Sequence.t =
     Sequence.unfold ~init:0 ~f:(fun i ->
       if i = N.n
       then None

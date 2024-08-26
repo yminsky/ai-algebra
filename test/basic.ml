@@ -26,7 +26,7 @@ let%expect_test "Dihedral Group D_4" =
     end)
   in
   printf "Dihedral Group D_4 (order: %d):\n" D4.order;
-  Sequence.iter D4.elements ~f:(fun (e : Dihedral_group.t) ->
+  Sequence.iter D4.elements ~f:(fun (e : Dihedral_group.Element.t) ->
     printf "%c%d " (if e.reflection then 'S' else 'R') e.rotation);
   printf "\n";
   [%expect
