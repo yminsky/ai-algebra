@@ -26,16 +26,22 @@ let reverse_subarray arr start stop =
 
 (** Merge two sorted lists and count the number of inversions between them *)
 let merge_and_count_inversions left right =
-  let rec helper left right acc inversions =
+  let rec helper left right rev_merged inversions =
+    (* Invariants:
+       1. 'left' and 'right' are sorted in ascending order
+       2. 'rev_merged' contains the merged elements in reverse order
+       3. 'inversions' counts the number of inversions found so far
+       4. All elements in 'rev_merged' are smaller than or equal to
+       the smallest element in both 'left' and 'right' *)
     match left, right with
-    | [], r -> List.rev_append acc r, inversions
-    | l, [] -> List.rev_append acc l, inversions
+    | [], r -> List.rev_append rev_merged r, inversions
+    | l, [] -> List.rev_append rev_merged l, inversions
     | l :: ls, r :: rs ->
       if l <= r
-      then helper ls right (l :: acc) inversions
+      then helper ls right (l :: rev_merged) inversions
       else (
         let new_inversions = inversions + List.length left in
-        helper left rs (r :: acc) new_inversions)
+        helper left rs (r :: rev_merged) new_inversions)
   in
   helper left right [] 0
 ;;
