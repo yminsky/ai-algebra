@@ -69,8 +69,8 @@ let%expect_test "Alternating Group A_3" =
   printf "\n";
   [%expect {|
     Alternating Group A_3 (order: 3):
-    012 201 210
-  |}];
+    012 120 201
+    |}];
   assert (A3.order = Sequence.length A3.elements)
 ;;
 

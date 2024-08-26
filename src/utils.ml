@@ -11,3 +11,14 @@ let swap arr i j =
 
 (** Factorial function *)
 let rec factorial n = if n <= 1 then 1 else n * factorial (n - 1)
+
+(** Reverse a subarray from index [start] to [stop] inclusive *)
+let reverse_subarray arr start stop =
+  let rec helper i j =
+    if i < j
+    then (
+      swap arr i j;
+      helper (i + 1) (j - 1))
+  in
+  helper start stop
+;;

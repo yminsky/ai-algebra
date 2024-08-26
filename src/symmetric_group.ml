@@ -13,17 +13,6 @@ module M (N : sig
   let order = Utils.factorial N.n
   let identity = Array.init N.n ~f:Fn.id
 
-  (** Reverse a subarray from index [start] to [stop] inclusive *)
-  let reverse_subarray arr start stop =
-    let rec helper i j =
-      if i < j
-      then (
-        Array.swap arr i j;
-        helper (i + 1) (j - 1))
-    in
-    helper start stop
-  ;;
-
   (** Generates the next permutation in lexicographic order *)
   let next_permutation arr =
     let n = Array.length arr in
@@ -39,7 +28,7 @@ module M (N : sig
         l := !l - 1
       done;
       Array.swap arr !k !l;
-      reverse_subarray arr (!k + 1) (n - 1);
+      Utils.reverse_subarray arr (!k + 1) (n - 1);
       Some arr)
   ;;
 
